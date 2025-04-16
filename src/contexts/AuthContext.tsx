@@ -3,6 +3,8 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 
+type Provider = 'github' | 'facebook' | 'linkedin_oidc';
+
 type AuthContextType = {
   session: Session | null;
   user: User | null;
@@ -14,6 +16,7 @@ type AuthContextType = {
   }>;
   signOut: () => Promise<void>;
   loading: boolean;
+  signInWithProvider: (provider: Provider) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,8 +68,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     await supabase.auth.signOut();
   };
 
+  const signInWithProvider = async (provider: Provider) => {
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: window.location.origin,
+      },
+    });
+  };
+
   return (
-    <AuthContext.Provider value={{ session, user, signIn, signUp, signOut, loading }}>
+    <AuthContext.Provider value={{ 
+      session, 
+      user, 
+      signIn, 
+      signUp, 
+      signOut, 
+      loading,
+      signInWithProvider
+    }}>
       {children}
     </AuthContext.Provider>
   );

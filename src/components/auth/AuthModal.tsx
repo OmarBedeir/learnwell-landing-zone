@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Github, Linkedin, Facebook } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,7 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTab = 'signin' }) => {
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, signInWithProvider } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,6 +88,19 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTab = 'si
     }
   };
 
+  const handleSocialSignIn = async (provider: 'github' | 'facebook' | 'linkedin_oidc') => {
+    try {
+      await signInWithProvider(provider);
+      // Note: we don't close the modal here because the user will be redirected to the provider's auth page
+    } catch (error) {
+      toast({
+        title: "Authentication failed",
+        description: "Could not sign in with social provider. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md relative">
@@ -138,6 +151,44 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTab = 'si
                 {isSubmitting ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
+
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-3 gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('github')}
+                  className="flex items-center justify-center"
+                >
+                  <Github className="h-5 w-5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('facebook')}
+                  className="flex items-center justify-center"
+                >
+                  <Facebook className="h-5 w-5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('linkedin_oidc')}
+                  className="flex items-center justify-center"
+                >
+                  <Linkedin className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
           </TabsContent>
           
           <TabsContent value="signup">
@@ -168,6 +219,44 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTab = 'si
                 {isSubmitting ? 'Signing up...' : 'Sign Up'}
               </Button>
             </form>
+
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-3 gap-3">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('github')}
+                  className="flex items-center justify-center"
+                >
+                  <Github className="h-5 w-5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('facebook')}
+                  className="flex items-center justify-center"
+                >
+                  <Facebook className="h-5 w-5" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => handleSocialSignIn('linkedin_oidc')}
+                  className="flex items-center justify-center"
+                >
+                  <Linkedin className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>

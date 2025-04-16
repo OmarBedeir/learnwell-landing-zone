@@ -1,13 +1,25 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleAuth = () => {
+    if (user) {
+      signOut();
+    } else {
+      navigate('/auth');
+    }
   };
 
   return (
@@ -15,9 +27,9 @@ const Navbar: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
-            <a href="/" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <span className="text-2xl font-bold text-brand-600 font-heading">LearnWell</span>
-            </a>
+            </Link>
           </div>
           
           <div className="hidden md:flex md:items-center md:space-x-6">
@@ -39,8 +51,17 @@ const Navbar: React.FC = () => {
               </a>
             </div>
             <div className="flex items-center space-x-2">
-              <Button variant="outline" size="sm">Log In</Button>
-              <Button size="sm">Sign Up</Button>
+              {user ? (
+                <Button variant="outline" size="sm" onClick={signOut}>
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Log Out
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" onClick={() => navigate('/auth')}>Log In</Button>
+                  <Button size="sm" onClick={() => navigate('/auth?tab=signup')}>Sign Up</Button>
+                </>
+              )}
             </div>
           </div>
           
@@ -81,8 +102,17 @@ const Navbar: React.FC = () => {
             Contact
           </a>
           <div className="pt-4 pb-3 flex flex-col space-y-2">
-            <Button variant="outline" className="w-full justify-center">Log In</Button>
-            <Button className="w-full justify-center">Sign Up</Button>
+            {user ? (
+              <Button variant="outline" className="w-full justify-center" onClick={signOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Log Out
+              </Button>
+            ) : (
+              <>
+                <Button variant="outline" className="w-full justify-center" onClick={() => navigate('/auth')}>Log In</Button>
+                <Button className="w-full justify-center" onClick={() => navigate('/auth?tab=signup')}>Sign Up</Button>
+              </>
+            )}
           </div>
         </div>
       </div>
